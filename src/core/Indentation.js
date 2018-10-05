@@ -3,6 +3,8 @@ import last from "lodash/last";
 
 const INDENT_TYPE_TOP_LEVEL = "top-level";
 const INDENT_TYPE_BLOCK_LEVEL = "block-level";
+const INDENT_TYPE_NEW_LINE_WITH_INDENT_LEVEL = "new-line-with-indent-level";
+const INDENT_TYPE_MAX_CHARACTER_LEVEL = "max-character-level";
 
 /**
  * Manages indentation levels.
@@ -43,6 +45,14 @@ export default class Indentation {
         this.indentTypes.push(INDENT_TYPE_BLOCK_LEVEL);
     }
 
+    increaseNewLineWithIndentLevel() {
+        this.indentTypes.push(INDENT_TYPE_NEW_LINE_WITH_INDENT_LEVEL);
+    }
+
+    increaseMaxCharacterLevel() {
+        this.indentTypes.push(INDENT_TYPE_MAX_CHARACTER_LEVEL);
+    }
+
     /**
      * Decreases indentation by one top-level indent.
      * Does nothing when the previous indent is not top-level.
@@ -63,6 +73,21 @@ export default class Indentation {
             const type = this.indentTypes.pop();
             if (type !== INDENT_TYPE_TOP_LEVEL) {
                 break;
+            }
+        }
+    }
+
+    decreaseNewLineWithIndentLevel() {
+        if (last(this.indentTypes) === INDENT_TYPE_NEW_LINE_WITH_INDENT_LEVEL) {
+            this.indentTypes.pop();
+        }
+    }
+
+    decreaseAllMaxCharacterLevel() {
+        for (let i = 0; i < this.indentTypes.length; i++) {
+            if (this.indentTypes[i] === INDENT_TYPE_MAX_CHARACTER_LEVEL) {
+                this.indentTypes.splice(i, 1);
+                i--;
             }
         }
     }

@@ -71,6 +71,10 @@ const reservedNewlineWords = [
     "XOR"
 ];
 
+const reservedNewlineWordsWithIndent = [
+    "ON"
+];
+
 let tokenizer;
 
 export default class StandardSqlFormatter {
@@ -93,6 +97,7 @@ export default class StandardSqlFormatter {
                 reservedWords,
                 reservedToplevelWords,
                 reservedNewlineWords,
+                reservedNewlineWordsWithIndent,
                 stringTypes: [`""`, "N''", "''", "``", "[]"],
                 openParens: ["(", "CASE"],
                 closeParens: [")", "END"],

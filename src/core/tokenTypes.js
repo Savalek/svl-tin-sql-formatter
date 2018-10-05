@@ -8,6 +8,7 @@ export default {
     RESERVED: "reserved",
     RESERVED_TOPLEVEL: "reserved-toplevel",
     RESERVED_NEWLINE: "reserved-newline",
+    RESERVED_NEWLINE_WITH_INDENT: "reserved-newline-with-indent",
     OPERATOR: "operator",
     OPEN_PAREN: "open-paren",
     CLOSE_PAREN: "close-paren",

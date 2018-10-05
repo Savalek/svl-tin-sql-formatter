@@ -26,6 +26,7 @@ export default class Tokenizer {
 
         this.RESERVED_TOPLEVEL_REGEX = this.createReservedWordRegex(cfg.reservedToplevelWords);
         this.RESERVED_NEWLINE_REGEX = this.createReservedWordRegex(cfg.reservedNewlineWords);
+        this.RESERVED_NEWLINE_WITH_INDENT_REGEX = this.createReservedWordRegex(cfg.reservedNewlineWordsWithIndent);
         this.RESERVED_PLAIN_REGEX = this.createReservedWordRegex(cfg.reservedWords);
 
         this.WORD_REGEX = this.createWordRegex(cfg.specialWordChars);
@@ -185,7 +186,7 @@ export default class Tokenizer {
             input,
             type: tokenTypes.OPEN_PAREN,
             regex: this.OPEN_PAREN_REGEX
-        });
+        }, true);
     }
 
     getCloseParenToken(input) {
@@ -193,7 +194,7 @@ export default class Tokenizer {
             input,
             type: tokenTypes.CLOSE_PAREN,
             regex: this.CLOSE_PAREN_REGEX
-        });
+        }, true);
     }
 
     getPlaceholderToken(input) {
@@ -262,7 +263,8 @@ export default class Tokenizer {
         if (previousToken && previousToken.value && previousToken.value === ".") {
             return;
         }
-        return this.getToplevelReservedToken(input) || this.getNewlineReservedToken(input) || this.getPlainReservedToken(input);
+        return this.getToplevelReservedToken(input) || this.getNewlineReservedToken(input) ||
+            this.getNewlineReservedWithIndentToken(input) || this.getPlainReservedToken(input);
     }
 
     getToplevelReservedToken(input) {
@@ -270,7 +272,7 @@ export default class Tokenizer {
             input,
             type: tokenTypes.RESERVED_TOPLEVEL,
             regex: this.RESERVED_TOPLEVEL_REGEX
-        });
+        }, true);
     }
 
     getNewlineReservedToken(input) {
@@ -278,7 +280,15 @@ export default class Tokenizer {
             input,
             type: tokenTypes.RESERVED_NEWLINE,
             regex: this.RESERVED_NEWLINE_REGEX
-        });
+        }, true);
+    }
+
+    getNewlineReservedWithIndentToken(input) {
+        return this.getTokenOnFirstMatch({
+            input: input,
+            type: tokenTypes.RESERVED_NEWLINE_WITH_INDENT,
+            regex: this.RESERVED_NEWLINE_WITH_INDENT_REGEX
+        }, true);
     }
 
     getPlainReservedToken(input) {
@@ -286,7 +296,7 @@ export default class Tokenizer {
             input,
             type: tokenTypes.RESERVED,
             regex: this.RESERVED_PLAIN_REGEX
-        });
+        }, true);
     }
 
     getWordToken(input) {
@@ -297,11 +307,15 @@ export default class Tokenizer {
         });
     }
 
-    getTokenOnFirstMatch({input, type, regex}) {
+    getTokenOnFirstMatch({input, type, regex}, toLowerCase) {
         const matches = input.match(regex);
 
         if (matches) {
-            return {type, value: matches[1]};
+            let tokenValue = matches[1];
+            if (toLowerCase === true) {
+                tokenValue = tokenValue.toLowerCase();
+            }
+            return { type: type, value: tokenValue };
         }
     }
 }
